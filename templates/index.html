@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FinAIgent - Premium Financial AI</title>
+
+  <!-- Modern Typography -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      /* Palette */
+      --primary: #6366f1;
+      --primary-glow: rgba(99, 102, 241, 0.4);
+      --secondary: #8b5cf6;
+      --bg-gradient: radial-gradient(circle at top left, #f8fafc, #f1f5f9);
+      --surface: rgba(255, 255, 255, 0.85);
+      --surface-border: rgba(255, 255, 255, 0.3);
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --user-bubble: linear-gradient(135deg, #6366f1, #8b5cf6);
+      --bot-bubble: #ffffff;
+      --glass-blur: blur(12px);
+      --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      --radius: 20px;
+    }
+
+    [data-theme="dark"] {
+      --bg-gradient: radial-gradient(circle at top left, #0f172a, #020617);
+      --surface: rgba(30, 41, 59, 0.6);
+      --surface-border: rgba(255, 255, 255, 0.05);
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --bot-bubble: rgba(255, 255, 255, 0.05);
+      --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      transition: background 0.5s ease;
+    }
+
+    /* Animated background elements */
+    .bg-blobs {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.15;
+      animation: float 20s infinite alternate;
+    }
+
+    .blob-1 {
+      width: 400px;
+      height: 400px;
+      background: var(--primary);
+      top: -100px;
+      right: -100px;
+    }
+
+    .blob-2 {
+      width: 300px;
+      height: 300px;
+      background: var(--secondary);
+      bottom: -50px;
+      left: -50px;
+      animation-delay: -5s;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      100% {
+        transform: translate(100px, 50px) scale(1.1);
+      }
+    }
+
+    /* Header */
+    .header {
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      backdrop-filter: var(--glass-blur);
+      background: var(--surface);
+      border-bottom: 1px solid var(--surface-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .logo {
+      width: 48px;
+      height: 48px;
+      background: var(--user-bubble);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 24px;
+      box-shadow: 0 8px 20px var(--primary-glow);
+    }
+
+    .brand h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .brand p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .theme-toggle {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      padding: 8px 16px;
+      border-radius: 30px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-main);
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .theme-toggle:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Layout */
+    .container {
+      flex: 1;
+      max-width: 1400px;
+      margin: 30px auto;
+      padding: 0 30px;
+      display: grid;
+      grid-template-columns: 1fr 350px;
+      gap: 30px;
+      width: 100%;
+    }
+
+    /* Chat Card */
+    .chat-card {
+      background: var(--surface);
+      backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius);
+      display: flex;
+      flex-direction: column;
+      height: 75vh;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+    }
+
+    .chat-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--surface-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .chat-header h2 {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: #10b981;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 8px;
+    }
+
+    .chat-body {
+      flex: 1;
+      padding: 25px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      scroll-behavior: smooth;
+    }
+
+    /* Messages */
+    .message {
+      max-width: 80%;
+      display: flex;
+      flex-direction: column;
+      animation: messageIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes messageIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.95);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .message.user {
+      align-self: flex-end;
+    }
+
+    .message.bot {
+      align-self: flex-start;
+    }
+
+    .bubble {
+      padding: 14px 20px;
+      border-radius: 20px;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      position: relative;
+    }
+
+    .message.user .bubble {
+      background: var(--user-bubble);
+      color: white;
+      border-bottom-right-radius: 4px;
+      box-shadow: 0 10px 15px -3px var(--primary-glow);
+    }
+
+    .message.bot .bubble {
+      background: var(--bot-bubble);
+      color: var(--text-main);
+      border-top-left-radius: 4px;
+      border: 1px solid var(--surface-border);
+      box-shadow: var(--shadow-sm);
+      position: relative;
+    }
+
+    .message.bot::before {
+      content: 'Assistant';
+      font-size: 0.75rem;
+      color: var(--primary);
+      font-weight: 600;
+      margin-bottom: 5px;
+      margin-left: 5px;
+    }
+
+    .message.user::before {
+      content: 'You';
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 5px;
+      margin-right: 5px;
+      align-self: flex-end;
+    }
+
+    /* Suggestion Chips */
+    .suggestions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 0 20px 15px 20px;
+      margin-top: auto;
+    }
+
+    .suggestion-chip {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      color: var(--primary);
+      font-weight: 500;
+      transition: all 0.2s ease;
+      animation: chipFadeIn 0.5s ease backwards;
+    }
+
+    .suggestion-chip:hover {
+      background: var(--primary);
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px var(--primary-glow);
+    }
+
+    @keyframes chipFadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    /* Input Area */
+    .chat-input-wrapper {
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border-top: 1px solid var(--surface-border);
+    }
+
+    .chat-input {
+      display: flex;
+      gap: 15px;
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: 15px;
+      padding: 8px 8px 8px 20px;
+      align-items: center;
+      transition: border-color 0.3s;
+    }
+
+    .chat-input:focus-within {
+      border-color: var(--primary);
+    }
+
+    input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      outline: none;
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 1rem;
+    }
+
+    #send-button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      width: 45px;
+      height: 45px;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    #send-button:hover {
+      background: var(--secondary);
+      transform: scale(1.05);
+    }
+
+    /* Side Panel */
+    .side-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .info-card {
+      background: var(--surface);
+      backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .info-card h3 {
+      font-size: 1rem;
+      margin-bottom: 15px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .info-item {
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+      transition: 0.3s;
+    }
+
+    .info-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateX(5px);
+    }
+
+    .info-item strong {
+      color: var(--primary);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--surface-border);
+      border-radius: 10px;
+    }
+
+    /* Responsive */
+    @media (max-width: 1000px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+
+      .side-panel {
+        display: none;
+      }
+
+      .header {
+        padding: 15px 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="bg-blobs">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+  </div>
+
+  <header class="header">
+    <div class="brand">
+      <div class="logo">F</div>
+      <div>
+        <h1>FinAIgent</h1>
+        <p>Premium Financial AI Experience</p>
+      </div>
+    </div>
+    <button class="theme-toggle" id="theme-toggle">
+      <span id="theme-icon">🌙</span>
+      <span id="theme-label">Dark Mode</span>
+    </button>
+  </header>
+
+  <main class="container">
+    <section class="chat-card">
+      <div class="chat-header">
+        <div><span class="status-dot"></span>
+          <h2>Live Assistant</h2>
+        </div>
+      </div>
+
+      <div class="chat-body" id="messages">
+        <!-- Messages will be injected by JavaScript -->
+      </div>
+
+      <div class="suggestions" id="suggestions">
+        <div class="suggestion-chip">How to create a budget?</div>
+        <div class="suggestion-chip">How to prevent bank fraud?</div>
+        <div class="suggestion-chip">Tell me about PMJDY scheme</div>
+        <div class="suggestion-chip">What is mutual fund?</div>
+      </div>
+
+      <div class="chat-input-wrapper">
+        <div class="chat-input">
+          <input id="user-input" type="text" placeholder="Ask anything about finance..." autocomplete="off">
+          <button id="send-button">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <aside class="side-panel">
+      <div class="info-card">
+        <h3>💡 Insights</h3>
+        <div class="info-item">
+          <strong>Smart Budgeting</strong>
+          Plan your portfolio with AI-driven insights for maximum security.
+        </div>
+        <div class="info-item">
+          <strong>Fraud Shield</strong>
+          Real-time analysis of suspicious financial patterns.
+        </div>
+      </div>
+
+      <div class="info-card">
+        <h3>🛡️ Emergency</h3>
+        <div class="info-item">
+          <strong>National Helpline</strong>
+          Suspend fraudulent activities immediately via 1930.
+        </div>
+        <a href="https://cybercrime.gov.in/" target="_blank"
+          style="color: var(--primary); text-decoration: none; font-size: 0.85rem; font-weight: 500;">Report Cybercrime
+          →</a>
+      </div>
+    </aside>
+  </main>
+
+  <script>
+    // Theme Management
+    const toggle = document.getElementById('theme-toggle');
+    const label = document.getElementById('theme-label');
+    const icon = document.getElementById('theme-icon');
+
+    function setTheme(theme) {
+      if (theme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        label.textContent = 'Light Mode';
+        icon.textContent = '☀️';
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+        label.textContent = 'Dark Mode';
+        icon.textContent = '🌙';
+      }
+      localStorage.setItem('finai-theme', theme);
+    }
+
+    const savedTheme = localStorage.getItem('finai-theme') ||
+      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    setTheme(savedTheme);
+
+    toggle.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      setTheme(isDark ? 'light' : 'dark');
+    });
+
+    // Chat Logic
+    const messagesEl = document.getElementById('messages');
+    const userInput = document.getElementById('user-input');
+    const sendButton = document.getElementById('send-button');
+
+    function escapeHtml(str) {
+      return String(str || '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+    }
+
+    function formatText(text) {
+      if (!text) return "";
+      let safe = escapeHtml(text);
+      // Enhanced formatting for better RAG display
+      return safe
+        .replace(/\*(.*?)\*/g, '<strong>$1</strong>')
+        .replace(/\n\n/g, '<div style="margin-bottom: 12px"></div>')
+        .replace(/\n/g, '<br>');
+    }
+
+    function addMessage(text, type = 'bot') {
+      const msg = document.createElement('div');
+      msg.className = `message ${type}`;
+      msg.innerHTML = `<div class="bubble">${formatText(text)}</div>`;
+      messagesEl.appendChild(msg);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    // Initial welcome message
+    addMessage("Welcome back. I am FinAIgent, your elite financial guide. How may I assist you with your investments or security today?", 'bot');
+
+    function addPlaceholder() {
+      const ph = document.createElement('div');
+      ph.className = 'message bot';
+      ph.innerHTML = `<div class="bubble" style="opacity: 0.5">FinAIgent is thinking...</div>`;
+      messagesEl.appendChild(ph);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+      return ph;
+    }
+
+    async function handleSend() {
+      const q = userInput.value.trim();
+      if (!q) return;
+
+      addMessage(q, 'user');
+      userInput.value = '';
+      const ph = addPlaceholder();
+
+      try {
+        const res = await fetch('/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question: q })
+        });
+        const data = await res.json();
+        ph.remove();
+        addMessage(data.answer || 'I am sorry, I could not process that.');
+      } catch (err) {
+        ph.remove();
+        addMessage('System error. Please reconnect.');
+      }
+    }
+
+    sendButton.addEventListener('click', handleSend);
+    userInput.addEventListener('keypress', e => e.key === 'Enter' && handleSend());
+
+    // Suggestion chips logic
+    document.querySelectorAll('.suggestion-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        userInput.value = chip.textContent;
+        handleSend();
+      });
+    });
+
+    userInput.focus();
+  </script>
+</body>
+
+</html>
