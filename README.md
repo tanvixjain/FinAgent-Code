@@ -81,10 +81,5 @@ This produces:
 
 ---
 
-## 🤝 Contributing
 
-We welcome contributions to FinAIgent! Whether it's adding new datasets, improving translation accuracy, or enhancing the UI, feel free to open a PR.
 
-## 📄 License
-
-[Insert License Type - e.g., MIT]
